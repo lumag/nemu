@@ -20,6 +20,19 @@ AC_PROG_MKDIR_P
 AC_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
 
+AC_ARG_ENABLE([werror],
+	      [AC_HELP_STRING([--disable-werror],
+			      [compile without -Werror])],
+	      [werror=$enableval], [werror=yes])
+if test "$werror" = "yes" -o "$werror" = "enable"
+then
+#	AC_SUBST(COMMON_CFLAGS, "-Wall -Werror")
+	CFLAGS="$CFLAGS -Wall -Werror"
+else
+#	AC_SUBST(COMMON_CFLAGS, "-Wall")
+	CFLAGS="$CFLAGS -Wall"
+fi
+
 # Checks for libraries.
 
 # Checks for header files.
