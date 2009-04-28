@@ -14,8 +14,8 @@ struct reg_s {
 	uint32_t off;
 };
 
-#define REG_A	0
 #define REG_MEM	6
+#define REG_A	7
 
 static struct reg_s regs[] = {
 		{"b", off_B},
@@ -33,6 +33,17 @@ static struct reg_s pairs[] = {
 		{"de", off_DE},
 		{"hl", off_HL},
 		{"sp", off_SP},
+};
+
+static struct reg_s alu_ops[] = { // FIXME
+		{"add", ADD},
+		{"adc", -1},
+		{"sub", SUB},
+		{"sbb", -1},
+		{"and", AND},
+		{"xor", XOR},
+		{"or", OR},
+		{"cp", -1},
 };
 
 #define STMT_STEP	16
@@ -75,7 +86,11 @@ static target_ulong_t parse_insn(struct IRs *bb, uint8_t *addr, target_ulong_t p
 		case 1:
 			reg = (b & 0x30) >> 4;
 			if (b&8) {
-				printf("!dad %s", pairs[reg].name);
+				stmt1 = ir_add_stmt(bb, new_get_reg(Size_I16, off_HL));
+				stmt2 = ir_add_stmt(bb, new_get_reg(Size_I16, pairs[reg].off));
+				stmt1 = ir_add_stmt(bb, new_alu(Size_I16, ADD, stmt1, stmt2));
+				ir_add_stmt(bb, new_set_reg(Size_I16, off_HL, stmt1));
+				printf("add hl,%s", pairs[reg].name);
 			} else {
 				op16 = addr[pc++];
 				op16 |= (addr[pc++] << 8);
@@ -117,12 +132,18 @@ static target_ulong_t parse_insn(struct IRs *bb, uint8_t *addr, target_ulong_t p
 			case 4:
 				op16 = addr[pc++];
 				op16 |= (addr[pc++] << 8);
-				printf("!shld @%04x", op16);
+				stmt1 = ir_add_stmt(bb, new_immediate(Size_I16, op16));
+				stmt2 = ir_add_stmt(bb, new_get_reg(Size_I16, off_HL));
+				ir_add_stmt(bb, new_store(Size_I16, stmt1, stmt2));
+				printf("ld (0x%04x), hl", op16);
 				break;
 			case 5:
 				op16 = addr[pc++];
 				op16 |= (addr[pc++] << 8);
-				printf("!lhld @%04x", op16);
+				stmt1 = ir_add_stmt(bb, new_immediate(Size_I16, op16));
+				stmt2 = ir_add_stmt(bb, new_load(Size_I16, stmt1));
+				ir_add_stmt(bb, new_set_reg(Size_I16, off_HL, stmt2));
+				printf("ld hl, (0x%04x)", op16);
 				break;
 			case 6:
 				op16 = addr[pc++];
@@ -135,15 +156,59 @@ static target_ulong_t parse_insn(struct IRs *bb, uint8_t *addr, target_ulong_t p
 			case 7:
 				op16 = addr[pc++];
 				op16 |= (addr[pc++] << 8);
-				printf("!lda @%04x", op16);
+				stmt1 = ir_add_stmt(bb, new_immediate(Size_I16, op16));
+				stmt2 = ir_add_stmt(bb, new_load(Size_I8, stmt1));
+				ir_add_stmt(bb, new_set_reg(Size_I8, off_A, stmt2));
+				printf("ld a, (0x%04x)", op16);
 				break;
 			}
 			break;
+		case 3:
+			reg = (b & 0x30) >> 4;
+			stmt1 = ir_add_stmt(bb, new_get_reg(Size_I16, pairs[reg].off));
+			stmt2 = ir_add_stmt(bb, new_immediate(Size_I16, 1));
+			if (b&8) {
+				stmt1 = ir_add_stmt(bb, new_alu(Size_I16, SUB, stmt1, stmt2));
+				printf("dec %s", regs[(b >> 3) & 7].name);
+			} else {
+				stmt1 = ir_add_stmt(bb, new_alu(Size_I16, ADD, stmt1, stmt2));
+				printf("inc %s", regs[(b >> 3) & 7].name);
+			}
+			ir_add_stmt(bb, new_set_reg(Size_I16, pairs[reg].off, stmt1));
+			break;
 		case 4:
-			printf("!inr %s", regs[(b >> 3) & 7].name);
+			reg = (b >> 3) & 7;
+
+			if (reg == REG_MEM) {
+				stmt2 = ir_add_stmt(bb, new_get_reg(Size_I16, off_HL));
+				stmt1 = ir_add_stmt(bb, new_load(Size_I8, stmt2));
+			} else {
+				stmt1 = ir_add_stmt(bb, new_get_reg(Size_I8, regs[reg].off));
+			}
+			stmt2 = ir_add_stmt(bb, new_immediate(Size_I8, 1));
+
+			stmt1 = ir_add_stmt(bb, new_alu(Size_I8, ADD, stmt1, stmt2));
+
+			ir_add_stmt(bb, new_set_reg(Size_I8, regs[reg].off, stmt1));
+
+			printf("inc %s", regs[reg].name);
 			break;
 		case 5:
-			printf("!dcr %s", regs[(b >> 3) & 7].name);
+			reg = (b >> 3) & 7;
+
+			if (reg == REG_MEM) {
+				stmt2 = ir_add_stmt(bb, new_get_reg(Size_I16, off_HL));
+				stmt1 = ir_add_stmt(bb, new_load(Size_I8, stmt2));
+			} else {
+				stmt1 = ir_add_stmt(bb, new_get_reg(Size_I8, regs[reg].off));
+			}
+			stmt2 = ir_add_stmt(bb, new_immediate(Size_I8, 1));
+
+			stmt1 = ir_add_stmt(bb, new_alu(Size_I8, SUB, stmt1, stmt2));
+
+			ir_add_stmt(bb, new_set_reg(Size_I8, regs[reg].off, stmt1));
+
+			printf("dec %s", regs[reg].name);
 			break;
 		case 6:
 			op8 = addr[pc++];
@@ -184,7 +249,22 @@ static target_ulong_t parse_insn(struct IRs *bb, uint8_t *addr, target_ulong_t p
 		printf("ld %s, %s", regs[reg].name, regs[reg2].name);
 		break;
 	case 0x80:
-		printf("!ALU %d, %s", (b >> 3) & 7, regs[b&7].name);
+		reg = b & 7;
+		reg2 = (b >> 3) & 7;
+
+		if (reg == REG_MEM) {
+			stmt1 = ir_add_stmt(bb, new_get_reg(Size_I16, off_HL));
+			stmt2 = ir_add_stmt(bb, new_load(Size_I8, stmt1));
+		} else {
+			stmt2 = ir_add_stmt(bb, new_get_reg(Size_I8, regs[reg].off));
+		}
+		stmt1 = ir_add_stmt(bb, new_get_reg(Size_I8, regs[REG_A].off));
+
+		stmt1 = ir_add_stmt(bb, new_alu(Size_I8, alu_ops[reg2].off, stmt1, stmt2));
+
+		ir_add_stmt(bb, new_set_reg(Size_I8, regs[REG_A].off, stmt1));
+
+		printf("%s %s", alu_ops[(b >> 3) & 7].name, regs[reg].name);
 		break;
 	case 0xc0:
 		goto undef;
