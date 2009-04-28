@@ -35,6 +35,9 @@ void dump_ir(struct IRs *bb) {
 		case Store:
 			printf("Store%s @(%x) #(%x)", sizes[stmt->size], stmt->store.addr_stmt, stmt->store.val_stmt);
 			break;
+		case ALUOp:
+			printf("ALU%s #(%x) #(%x)", sizes[stmt->size], stmt->alu.op1_stmt, stmt->alu.op2_stmt);
+			break;
 		}
 
 		printf("\n");

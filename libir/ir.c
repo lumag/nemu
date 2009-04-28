@@ -57,3 +57,13 @@ struct IRStmt *new_store(IRSize size, int addr_stmt, int val_stmt) {
 	return stmt;
 }
 
+struct IRStmt *new_alu(IRSize size, IRAluOp op, int op1_stmt, int op2_stmt) {
+	struct IRStmt *stmt = calloc(1, sizeof(struct IRStmt));
+	stmt->type = ALUOp;
+	stmt->size = size;
+	stmt->alu.op = op;
+	stmt->alu.op1_stmt = op1_stmt;
+	stmt->alu.op2_stmt = op2_stmt;
+
+	return stmt;
+}

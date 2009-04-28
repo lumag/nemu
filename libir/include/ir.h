@@ -16,7 +16,16 @@ typedef enum {
 	GetReg, SetReg,
 	Load, Store,
 	Immediate,
+	ALUOp,
 } IRStmtType;
+
+typedef enum {
+	ADD,			// FIXME
+	SUB,
+	AND,
+	OR,
+	XOR,
+} IRAluOp;
 
 struct IRStmt {
 	IRStmtType type;
@@ -39,6 +48,12 @@ struct IRStmt {
 		struct {
 			uint64_t val; // FIXME: replace with union?
 		} immediate;
+		struct {
+			// FIXME: operation type
+			IRAluOp op;
+			int op1_stmt;
+			int op2_stmt;
+		} alu;
 	};
 };
 
@@ -47,6 +62,7 @@ struct IRStmt *new_get_reg(IRSize size, uint32_t offset);
 struct IRStmt *new_set_reg(IRSize size, uint32_t offset, uint32_t val_stmt);
 struct IRStmt *new_load(IRSize size, int addr_stmt);
 struct IRStmt *new_store(IRSize size, int addr_stmt, int val_stmt);
+struct IRStmt *new_alu(IRSize size, IRAluOp op, int op1_stmt, int op2_stmt);
 
 struct IRs {
 	uint64_t startPC; // FIXME: type of startPC
