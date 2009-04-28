@@ -18,3 +18,4 @@ misc
 stamp-h1
 *.la
 *.lo
+guest-i8080/test

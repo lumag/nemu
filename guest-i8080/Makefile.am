@@ -6,5 +6,5 @@ AM_CPPFLAGS = -I$(srcdir)/include -I$(top_srcdir)/include -I$(top_srcdir)/libir/
 noinst_HEADERS = include/i8080.h
 libguest_i8080_la_SOURCES = parse.c
 
-test_SOURCES =
+test_SOURCES = test.c
 test_LDADD = libguest-i8080.la ../libir/libir.la
