@@ -247,6 +247,7 @@ int main(int argc, char **argv) {
 	close(fd);
 
 	bb = parse(addr, buf.st_size);
+	dump_ir(bb);
 
 	return EXIT_SUCCESS;
 }

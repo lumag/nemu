@@ -19,7 +19,7 @@ typedef enum {
 } IRStmtType;
 
 struct IRStmt {
-	IRStmtType stmt_type;
+	IRStmtType type;
 	IRSize size;
 	union {
 		struct {
@@ -57,5 +57,7 @@ struct IRs {
 	uint32_t max_code;
 	int *code; /* indices inside stmts array */
 };
+
+void dump_ir(struct IRs *bb);
 
 #endif /* IR_H_ */
