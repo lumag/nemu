@@ -75,5 +75,6 @@ struct IRs {
 };
 
 void dump_ir(struct IRs *bb);
+void interp_ir(struct IRs *bb, uint8_t *regfile);
 
 #endif /* IR_H_ */

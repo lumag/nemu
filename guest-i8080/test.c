@@ -15,10 +15,12 @@
 #include <stdlib.h>
 
 #include <guest.h>
+#include <i8080.h>
 #include <ir.h>
 
 int main(int argc, char **argv) {
 	struct IRs *bb;
+	struct I8080CPU cpu;
 	if (argc < 2) {
 		fprintf(stderr, "Usage: %s file\n", argv[0]);
 		return EXIT_FAILURE;
@@ -47,6 +49,7 @@ int main(int argc, char **argv) {
 
 	bb = parse(addr, buf.st_size);
 	dump_ir(bb);
+	interp_ir(bb, (uint8_t *)&cpu);
 
 	return EXIT_SUCCESS;
 }
