@@ -264,10 +264,25 @@ static target_ulong_t parse_insn(struct IRs *bb, uint8_t *addr, target_ulong_t p
 
 		ir_add_stmt(bb, new_set_reg(Size_I8, regs[REG_A].off, stmt1));
 
-		printf("%s %s", alu_ops[(b >> 3) & 7].name, regs[reg].name);
+		printf("%s %s", alu_ops[reg2].name, regs[reg].name);
 		break;
 	case 0xc0:
-		goto undef;
+		switch (b & 7) {
+		case 6:
+			op8 = addr[pc++];
+			reg2 = (b >> 3) & 7;
+			stmt2 = ir_add_stmt(bb, new_immediate(Size_I8, op8));
+			stmt1 = ir_add_stmt(bb, new_get_reg(Size_I8, regs[REG_A].off));
+
+			stmt1 = ir_add_stmt(bb, new_alu(Size_I8, alu_ops[reg2].off, stmt1, stmt2));
+
+			ir_add_stmt(bb, new_set_reg(Size_I8, regs[REG_A].off, stmt1));
+
+			printf("%s 0x%x", alu_ops[reg2].name, op8);
+			break;
+		default:
+			goto undef;
+		}
 		break;
 	}
 	return pc;
