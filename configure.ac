@@ -1,8 +1,8 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.63])
-AC_INIT([nemu], [0.1], [dbaryshkov@gmail.com])
+AC_PREREQ(2.63)
+AC_INIT([nemu],[0.1],[dbaryshkov@gmail.com])
 AC_CONFIG_SRCDIR([libir/ir.c])
 AC_CONFIG_AUX_DIR([misc])
 AC_CONFIG_MACRO_DIR([m4])
@@ -21,8 +21,7 @@ AC_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
 
 AC_ARG_ENABLE([werror],
-	      [AC_HELP_STRING([--disable-werror],
-			      [compile without -Werror])],
+	      [AS_HELP_STRING([--disable-werror],[compile without -Werror])],
 	      [werror=$enableval], [werror=yes])
 if test "$werror" = "yes" -o "$werror" = "enable"
 then
