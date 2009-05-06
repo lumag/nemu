@@ -28,6 +28,35 @@
 
 #include "ir.h"
 
+static uint32_t sizes[] = {
+		[Size_I8] = 1,
+		[Size_I16] = 2,
+};
+
+static inline uint64_t interp_alu(struct IRStmt *stmt, uint64_t op1, uint64_t op2) {
+	uint64_t r;
+
+	switch (stmt->alu.op) {
+	case ADD:
+		r = op1 + op2;
+		break;
+	case SUB:
+		r = op1 - op2;
+		break;
+	case AND:
+		r = op1 & op2;
+		break;
+	case OR:
+		r = op1 | op2;
+		break;
+	case XOR:
+		r = op1 ^ op2;
+		break;
+	}
+
+	return r & ((1 << (8 * sizes[stmt->size])) - 1);
+}
+
 // FIXME endianness!!!
 void interp_ir(struct IRs *bb, uint8_t *regfile) {
 	int i;
@@ -76,8 +105,8 @@ void interp_ir(struct IRs *bb, uint8_t *regfile) {
 //			printf("Store%s @(%x) #(%x)", sizes[stmt->size], stmt->store.addr_stmt, stmt->store.val_stmt);
 			break;
 		case ALUOp:
-			printf("!!!!ALU");
 //			printf("ALU%s #(%x) #(%x)", sizes[stmt->size], stmt->alu.op1_stmt, stmt->alu.op2_stmt);
+			results[nstmt] = interp_alu(stmt, results[stmt->alu.op1_stmt], results[stmt->alu.op2_stmt]);
 			break;
 		}
 

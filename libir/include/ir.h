@@ -33,7 +33,7 @@ typedef enum {
 } IRStmtType;
 
 typedef enum {
-	ADD,			// FIXME
+	ADD,			// FIXME add more or understand how to work with carry
 	SUB,
 	AND,
 	OR,
