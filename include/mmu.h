@@ -1,5 +1,5 @@
 /*
- * guest.h
+ * mmu.h
  *
  * Copyright (C) 2009 Dmitry Eremin-Solenikov
  *
@@ -18,11 +18,22 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef GUEST_H_
-#define GUEST_H_
 
-#include <i8080.h>
+#ifndef MMU_H_
+#define MMU_H_
 
-struct IRs *parse(void *addr, unsigned long size);
+#include <stdint.h>
 
-#endif /* GUEST_H_ */
+// FIXME: maybe these should be bound to the whole box, not to the cpu in it?
+// FIXME: addr and len are limited to 32 bit
+struct CPUInfo;
+
+typedef uint32_t (*mmio_read)(void *opaque, uint32_t offset);
+typedef void (*mmio_write)(void *opaque, uint32_t offset);
+
+int register_mmio(uint32_t addr, uint32_t mask, void *opaque);
+
+uint32_t cpu_memory_read(struct CPUInfo *cpu, uint8_t *buf, uint32_t addr, uint32_t len);
+uint32_t cpu_memory_write(struct CPUInfo *cpu, uint8_t *buf, uint32_t addr, uint32_t len);
+
+#endif /* MMU_H_ */

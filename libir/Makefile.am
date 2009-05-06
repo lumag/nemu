@@ -1,6 +1,6 @@
 noinst_LTLIBRARIES = libir.la
 
-AM_CPPFLAGS = -I$(srcdir)/include
+AM_CPPFLAGS = -I$(srcdir)/include -I$(top_srcdir)/include
 
 noinst_HEADERS = include/ir.h
 libir_la_SOURCES = ir.c dump_ir.c interp.c

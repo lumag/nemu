@@ -28,6 +28,8 @@
 
 #include "ir.h"
 
+#include <mmu.h>
+
 static uint32_t sizes[] = {
 		[Size_I8] = 1,
 		[Size_I16] = 2,
@@ -97,11 +99,13 @@ void interp_ir(struct IRs *bb, uint8_t *regfile) {
 			}
 			break;
 		case Load:
-			printf("!!!!Load");
+			printf("!!!!Load ");
+			cpu_memory_read(NULL, (uint8_t*)&results[nstmt], results[stmt->load.addr_stmt], sizes[stmt->size]);
 //			printf("Load%s @(%x)", sizes[stmt->size], stmt->load.addr_stmt);
 			break;
 		case Store:
-			printf("!!!!Store");
+			cpu_memory_write(NULL, (uint8_t*)&results[stmt->store.val_stmt], results[stmt->load.addr_stmt], sizes[stmt->size]);
+			results[nstmt] = results[stmt->store.val_stmt];
 //			printf("Store%s @(%x) #(%x)", sizes[stmt->size], stmt->store.addr_stmt, stmt->store.val_stmt);
 			break;
 		case ALUOp:

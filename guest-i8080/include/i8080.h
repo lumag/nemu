@@ -37,6 +37,8 @@ struct I8080CPU {
 	uint16_t PC;
 };
 
+#define CPUInfo I8080CPU
+
 typedef uint16_t target_ulong_t; // FIXME
 
 #define off_BC	offsetof(struct I8080CPU, BC)

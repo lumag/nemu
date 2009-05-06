@@ -1,5 +1,5 @@
 /*
- * guest.h
+ * mmu.c
  *
  * Copyright (C) 2009 Dmitry Eremin-Solenikov
  *
@@ -18,11 +18,23 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef GUEST_H_
-#define GUEST_H_
 
-#include <i8080.h>
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
-struct IRs *parse(void *addr, unsigned long size);
+#include <guest.h>
+#include <mmu.h>
+#include <stdio.h>
+#include <string.h>
 
-#endif /* GUEST_H_ */
+uint32_t cpu_memory_read(struct CPUInfo *cpu, uint8_t *buf, uint32_t addr, uint32_t len) {
+	printf("read %d bytes at %x ", len, addr);
+	memset(buf, -1, len);
+	return -1;
+}
+
+uint32_t cpu_memory_write(struct CPUInfo *cpu, uint8_t *buf, uint32_t addr, uint32_t len) {
+	printf("write %d bytes at %x ", len, addr);
+	return -1;
+}
