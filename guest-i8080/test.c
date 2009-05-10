@@ -36,8 +36,7 @@
 #include <i8080.h>
 #include <ir.h>
 #include <mmio.h>
-
-extern struct mmio_handler i7seg_hdlr;
+#include <drivers.h>
 
 int main(int argc, char **argv) {
 	struct IRs *bb;

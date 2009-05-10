@@ -20,5 +20,6 @@ stamp-h1
 *~
 *.la
 *.lo
+build
 guest-i8080/test
 nemu-*.tar.*

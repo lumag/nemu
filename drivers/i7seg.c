@@ -25,7 +25,8 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#include <mmio.h>
+#include <mmio-drv.h>
+#include <drivers.h>
 
 static uint8_t i7seg_read8(void *opaque, ram_offset_t offset) {
 	fprintf(stderr, "7-segment at %p read8 at: 0x%lx\n", opaque, offset);

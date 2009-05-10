@@ -39,6 +39,7 @@ fi
 AC_CHECK_HEADERS([fcntl.h stdint.h stdlib.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
+AC_C_INLINE
 AC_TYPE_UINT8_T
 AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
@@ -51,5 +52,6 @@ AC_FUNC_REALLOC
 AC_CONFIG_FILES([Makefile
                  libir/Makefile
                  mmio/Makefile
+                 drivers/Makefile
 		 guest-i8080/Makefile])
 AC_OUTPUT

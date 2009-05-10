@@ -1,5 +1,5 @@
 /*
- * mmio.h
+ * mmio-drv.h
  *
  * Copyright (C) 2009 Dmitry Eremin-Solenikov
  *
@@ -19,31 +19,20 @@
  */
 
 
-#ifndef MMIO_H_
-#define MMIO_H_
+#ifndef MMIODRV_H_
+#define MMIODRV_H_
 
-#include <stdint.h>
 
-#include "mmio-drv.h"
+typedef unsigned long ram_offset_t;
 
-#if !defined(GUEST_ADDRESS_BITS)
-#error you shoud define GUEST_ADDRESS_BITS
-#elif GUEST_ADDRESS_BITS <= 16
-typedef uint16_t guest_address_t;
-#elif GUEST_ADDRESS_BITS <= 32
-typedef uint32_t guest_address_t;
-#else
-#error guest address space not supported
+struct mmio_handler { // FIXME: it may be necessary to add 64-bit handlers
+	uint8_t (*read8)(void *opaque, ram_offset_t offset);
+	uint16_t (*read16)(void *opaque, ram_offset_t offset);
+	uint32_t (*read32)(void *opaque, ram_offset_t offset);
+	void (*write8)(void *opaque, ram_offset_t offset, uint8_t value);
+	void (*write16)(void *opaque, ram_offset_t offset, uint16_t value);
+	void (*write32)(void *opaque, ram_offset_t offset, uint32_t value);
+};
+
 #endif
 
-void mmio_register_memory(guest_address_t start, ram_offset_t size, void *opaque, struct mmio_handler *hdlr);
-
-uint8_t mmio_read_8(guest_address_t addr);
-void mmio_write_8(guest_address_t addr, uint8_t value);
-uint16_t mmio_read_16(guest_address_t addr);
-void mmio_write_16(guest_address_t addr, uint16_t value);
-uint32_t mmio_read_32(guest_address_t addr);
-void mmio_write_32(guest_address_t addr, uint32_t value);
-
-
-#endif /* MMU_H_ */
