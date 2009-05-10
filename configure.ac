@@ -49,5 +49,6 @@ AC_FUNC_REALLOC
 
 AC_CONFIG_FILES([Makefile
                  libir/Makefile
+                 mmio/Makefile
 		 guest-i8080/Makefile])
 AC_OUTPUT

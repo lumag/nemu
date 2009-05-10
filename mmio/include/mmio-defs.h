@@ -1,5 +1,5 @@
 /*
- * mmu.h
+ * mmio-defs.h
  *
  * Copyright (C) 2009 Dmitry Eremin-Solenikov
  *
@@ -19,21 +19,29 @@
  */
 
 
-#ifndef MMU_H_
-#define MMU_H_
+#ifndef MMIODEFS_H_
+#define MMIODEFS_H_
+
+#define GUEST_PAGE_BITS 10
+
+#if GUEST_ADDRESS_BITS < GUEST_PAGE_BITS
+#error bad guest MMU configuration
+#endif
 
 #include <stdint.h>
 
-// FIXME: maybe these should be bound to the whole box, not to the cpu in it?
-// FIXME: addr and len are limited to 32 bit
-struct CPUInfo;
+#define GUEST_PGD_BITS 10
+#if GUEST_ADDRESS_BITS <= GUEST_PAGE_BITS + GUEST_PGD_BITS
+#undef GUEST_PGD_BITS
+#define GUEST_PGD_BITS (GUEST_ADDRESS_BITS - GUEST_PAGE_BITS)
+#define GUEST_PGD_LEVEL 1
+#else
+#define GUEST_PGD_LEVEL 2
+#endif
 
-typedef uint32_t (*mmio_read)(void *opaque, uint32_t offset);
-typedef void (*mmio_write)(void *opaque, uint32_t offset);
+#define GUEST_PAGE_SIZE (1 << GUEST_PAGE_BITS)
+#define GUEST_PAGE_MASK (~(GUEST_PAGE_SIZE - 1))
 
-int register_mmio(uint32_t addr, uint32_t mask, void *opaque);
+extern struct mmio_handler *undef_hdlr; // FIXME
 
-uint32_t cpu_memory_read(struct CPUInfo *cpu, uint8_t *buf, uint32_t addr, uint32_t len);
-uint32_t cpu_memory_write(struct CPUInfo *cpu, uint8_t *buf, uint32_t addr, uint32_t len);
-
-#endif /* MMU_H_ */
+#endif /* MMUDEFS_H_ */

@@ -1,4 +1,4 @@
-SUBDIRS = libir guest-i8080
+SUBDIRS = libir mmio guest-i8080
 noinst_HEADERS = include/sys.h
 ACLOCAL_AMFLAGS = -I m4
 

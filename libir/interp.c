@@ -28,7 +28,7 @@
 
 #include "ir.h"
 
-#include <mmu.h>
+#include <mmio.h>
 
 static uint32_t sizes[] = {
 		[Size_I8] = 1,
@@ -100,11 +100,25 @@ void interp_ir(struct IRs *bb, uint8_t *regfile) {
 			break;
 		case Load:
 			printf("!!!!Load ");
-			cpu_memory_read(NULL, (uint8_t*)&results[nstmt], results[stmt->load.addr_stmt], sizes[stmt->size]);
+			switch (stmt->size) {
+			case Size_I8:
+				results[nstmt] = mmio_read_8(results[stmt->load.addr_stmt]);
+				break;
+			case Size_I16:
+				results[nstmt] = mmio_read_16(results[stmt->load.addr_stmt]);
+				break;
+			}
 //			printf("Load%s @(%x)", sizes[stmt->size], stmt->load.addr_stmt);
 			break;
 		case Store:
-			cpu_memory_write(NULL, (uint8_t*)&results[stmt->store.val_stmt], results[stmt->load.addr_stmt], sizes[stmt->size]);
+			switch (stmt->size) {
+			case Size_I8:
+				mmio_write_8(results[stmt->load.addr_stmt], results[stmt->store.val_stmt]);
+				break;
+			case Size_I16:
+				mmio_write_16(results[stmt->load.addr_stmt], results[stmt->store.val_stmt]);
+				break;
+			}
 			results[nstmt] = results[stmt->store.val_stmt];
 //			printf("Store%s @(%x) #(%x)", sizes[stmt->size], stmt->store.addr_stmt, stmt->store.val_stmt);
 			break;
