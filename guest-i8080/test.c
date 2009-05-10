@@ -35,6 +35,9 @@
 #include <guest.h>
 #include <i8080.h>
 #include <ir.h>
+#include <mmio.h>
+
+extern struct mmio_handler i7seg_hdlr;
 
 int main(int argc, char **argv) {
 	struct IRs *bb;
@@ -64,6 +67,10 @@ int main(int argc, char **argv) {
 	}
 
 	close(fd);
+
+	mmio_register_memory(0x9000, 1, (void *)0x9000, &i7seg_hdlr);
+	mmio_register_memory(0x9001, 1, (void *)0x9001, &i7seg_hdlr);
+	mmio_register_memory(0x9002, 1, (void *)0x9002, &i7seg_hdlr);
 
 	bb = parse(addr, buf.st_size);
 	dump_ir(bb);
