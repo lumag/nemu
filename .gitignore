@@ -14,8 +14,11 @@ INSTALL
 libtool
 Makefile
 Makefile.in
+m4
 misc
 stamp-h1
+*~
 *.la
 *.lo
 guest-i8080/test
+nemu-*.tar.*
