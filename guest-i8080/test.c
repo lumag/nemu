@@ -74,6 +74,7 @@ int main(int argc, char **argv) {
 	bb = parse(addr, buf.st_size);
 	dump_ir(bb);
 	interp_ir(bb, (uint8_t *)&cpu);
+	free_ir(bb);
 
 	return EXIT_SUCCESS;
 }

@@ -84,3 +84,14 @@ struct IRStmt *new_alu(IRSize size, IRAluOp op, int op1_stmt, int op2_stmt) {
 
 	return stmt;
 }
+
+void free_ir(struct IRs *bb) {
+	int i;
+
+	free(bb->code);
+	for (i = 0; i < bb->num_stmt; i++)
+		free(bb->stmts[i]);
+
+	free(bb->stmts);
+	free(bb);
+}
