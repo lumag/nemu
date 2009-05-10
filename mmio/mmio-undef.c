@@ -24,6 +24,7 @@
 #endif
 
 #include <mmio.h>
+#include <mmio-defs.h>
 #include <stdio.h>
 
 static uint8_t undef_read8(void *opaque, ram_offset_t offset) {
