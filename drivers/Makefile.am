@@ -1,3 +1,4 @@
+noinst_HEADERS = include/drivers.h
 noinst_LTLIBRARIES = libdrivers.la
 
 AM_CPPFLAGS = -I$(srcdir)/include -I$(top_srcdir)/mmio/include
