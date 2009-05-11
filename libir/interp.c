@@ -33,6 +33,7 @@
 static uint32_t sizes[] = {
 		[Size_I8] = 1,
 		[Size_I16] = 2,
+		[Size_I32] = 4,
 };
 
 static inline uint64_t interp_alu(struct IRStmt *stmt, uint64_t op1, uint64_t op2) {
@@ -77,6 +78,9 @@ void interp_ir(struct IRs *bb, uint8_t *regfile) {
 				uint8_t *ptr = regfile + stmt->get_reg.reg_offset;
 				uint64_t r = 0;
 				switch (stmt->size) {
+				case Size_I32:
+					r |= (*(ptr+3)) << 24;
+					r |= (*(ptr+2)) << 16;
 				case Size_I16:
 					r |= (*(ptr+1)) << 8;
 				case Size_I8:
@@ -90,6 +94,9 @@ void interp_ir(struct IRs *bb, uint8_t *regfile) {
 				uint8_t *ptr = regfile + stmt->get_reg.reg_offset;
 				uint64_t r = results[stmt->set_reg.val_stmt];
 				switch (stmt->size) {
+				case Size_I32:
+					(*(ptr+3)) = (r >> 24) & 0xff;
+					(*(ptr+2)) = (r >> 16) & 0xff;
 				case Size_I16:
 					(*(ptr+1)) = (r >> 8) & 0xff;
 				case Size_I8:
@@ -107,6 +114,9 @@ void interp_ir(struct IRs *bb, uint8_t *regfile) {
 			case Size_I16:
 				results[nstmt] = mmio_read_16(results[stmt->load.addr_stmt]);
 				break;
+			case Size_I32:
+				results[nstmt] = mmio_read_32(results[stmt->load.addr_stmt]);
+				break;
 			}
 //			printf("Load%s @(%x)", sizes[stmt->size], stmt->load.addr_stmt);
 			break;
@@ -117,6 +127,9 @@ void interp_ir(struct IRs *bb, uint8_t *regfile) {
 				break;
 			case Size_I16:
 				mmio_write_16(results[stmt->load.addr_stmt], results[stmt->store.val_stmt]);
+				break;
+			case Size_I32:
+				mmio_write_32(results[stmt->load.addr_stmt], results[stmt->store.val_stmt]);
 				break;
 			}
 			results[nstmt] = results[stmt->store.val_stmt];

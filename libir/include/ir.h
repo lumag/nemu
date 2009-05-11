@@ -23,7 +23,7 @@
 
 #include <stdint.h>
 
-typedef enum { Size_I8, Size_I16 } IRSize;
+typedef enum { Size_I8, Size_I16, Size_I32 } IRSize;
 
 typedef enum {
 	GetReg, SetReg,

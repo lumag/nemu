@@ -29,6 +29,7 @@
 static const char *sizes[] = {
 		[Size_I8] = "I8",
 		[Size_I16] = "I16",
+		[Size_I32] = "I32",
 };
 
 void dump_ir(struct IRs *bb) {
