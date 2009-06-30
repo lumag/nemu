@@ -46,9 +46,9 @@ PROPNAMECHAR	[a-zA-Z0-9,._+*#?@-]
 {PROPNAMECHAR}+		return DTS_PROPNAME;
 \"([^\\"]|\\.)*\"	return DTS_STRING;
 
-[/;{}=]			return yytext[0];
-
 \<			BEGIN(LITERAL); return '<';
 <LITERAL>[0-9]+|0x[0-9A-Fa-f]+	return DTS_LITERAL;
 <LITERAL>\>		BEGIN(INITIAL); return '>';
+
+<*>.			return yytext[0];
 
