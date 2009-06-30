@@ -27,7 +27,7 @@
 #include <config.h>
 #endif
 
-#include "y.tab.h"
+#include "dtc-parser.h"
 
 #define YY_USER_INIT	yy_flex_debug = 0;
 #define YY_USER_ACTION				\
