@@ -28,6 +28,10 @@
 #include "y.tab.h"
 
 #define YY_USER_INIT	yy_flex_debug = 0;
+#define YY_USER_ACTION				\
+	{					\
+		yylloc.first_line = yylineno;	\
+	}
 
 %}
 
