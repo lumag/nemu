@@ -27,9 +27,15 @@
 #include <config.h>
 #endif
 
+extern int yyerror(const char *message);
+
 int yydebug = 0;
 
 %}
+
+%code requires {
+extern int yylex(void);
+}
 
 %token DTS_V1;
 %token DTS_PROPNAME;
