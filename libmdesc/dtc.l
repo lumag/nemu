@@ -36,6 +36,7 @@
 %}
 
 PROPNAMECHAR	[a-zA-Z0-9,._+*#?@-]
+ID		[a-zA-Z_][a-zA-Z_0-9]*
 
 %x LITERAL
 
@@ -46,6 +47,11 @@ PROPNAMECHAR	[a-zA-Z0-9,._+*#?@-]
 <*>[[:space:]]		;
 <*>"//".*\n		;
 <*>"/*"([^*]|\*+[^*/])*"*/" ;
+
+,			return yytext[0];
+
+<*>\&{ID}		return DTS_REF;
+<*>{ID}:		return DTS_LABEL;
 
 {PROPNAMECHAR}+		return DTS_PROPNAME;
 \"([^\\"]|\\.)*\"	return DTS_STRING;

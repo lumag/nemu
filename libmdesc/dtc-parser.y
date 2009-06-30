@@ -41,39 +41,51 @@ extern int yylex(void);
 %token DTS_PROPNAME;
 %token DTS_STRING;
 %token DTS_LITERAL;
+%token DTS_REF;
+%token DTS_LABEL;
 
 %%
 
-input:	DTS_V1 ';' devicetree
+input:		DTS_V1 ';' devicetree
      ;
 
-devicetree: '/' node
+devicetree:	'/' node
 	  ;
 
-node:	'{' props subnodes '}' ';'
+node:		'{' props subnodes '}' ';'
     ;
 
-props:	/* empty */
-     |	props prop
+props:		/* empty */
+     |		props prop
      ;
 
-prop:	DTS_PROPNAME '=' propdata ';'
-    |	DTS_PROPNAME ';'
+prop:		label DTS_PROPNAME '=' propdata ';'
+    |		label DTS_PROPNAME ';'
     ;
 
-propdata:	DTS_STRING
+propdata:	label propelem
+	|	label propelem ',' propdata
+	;
+
+propelem:	DTS_STRING
 	|	'<' celllist '>'
+	|	DTS_REF
 	;
 
 celllist:	/* empty */
-       |	celllist DTS_LITERAL
+       |	celllist label DTS_LITERAL
+       |	celllist label DTS_REF
        ;
 
 subnodes:	/* empty */
 	|	subnode subnodes
 	;
 
-subnode:	DTS_PROPNAME node
+subnode:	label DTS_PROPNAME node
        ;
+
+label:		/* empty */
+     |		DTS_LABEL
+     ;
 
 %%
