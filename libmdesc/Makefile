@@ -2,14 +2,14 @@ all: dtc
 
 LDLIBS = -ly
 YFLAGS = -d
-CPPFLAGS = -Wall
+CFLAGS = -Wall -Werror
 CC = gcc-4.4
 
 dtc: dtc.o dtc-parser.o
 
-dtc.o: dtc.l dtc-parser.h
+dtc.o: dtc.l y.tab.h
 
-dtc-parser.h: dtc-parser.o
+y.tab.h: dtc-parser.o
 
 clean:
 	-rm -f *.o *.tab.c *.tab.h dtc
