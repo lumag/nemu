@@ -55,6 +55,7 @@ ID		[a-zA-Z_][a-zA-Z_0-9]*
 <BYTESTRING>[0-9A-Fa-f]{2} return DTS_BYTE;
 <BYTESTRING>\]		BEGIN(INITIAL); return ']';
 
+<INITIAL,LITERAL>"&{"("/"{PROPNAMECHAR}+)+"}" return DTS_REF;
 <INITIAL,LITERAL>\&{ID}	return DTS_REF;
 <*>{ID}:		return DTS_LABEL;
 
