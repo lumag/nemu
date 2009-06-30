@@ -21,6 +21,7 @@
 
 %locations
 %debug
+%pure_parser
 
 %{
 #ifdef HAVE_CONFIG_H
@@ -33,8 +34,9 @@ int yydebug = 0;
 
 %}
 
-%code requires {
-extern int yylex(void);
+%code provides {
+extern int yylex \
+               (YYSTYPE * yylval_param,YYLTYPE * yylloc_param );
 }
 
 %token DTS_V1;

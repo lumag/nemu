@@ -19,6 +19,8 @@
  */
 
 %option noyywrap nounput yylineno debug noinput nodefault
+%option bison-bridge bison-locations
+%option warn
 
 %{
 #ifdef HAVE_CONFIG_H
@@ -30,7 +32,7 @@
 #define YY_USER_INIT	yy_flex_debug = 0;
 #define YY_USER_ACTION				\
 	{					\
-		yylloc.first_line = yylineno;	\
+		yylloc->first_line = yylineno;	\
 	}
 
 %}
