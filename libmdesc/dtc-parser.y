@@ -43,6 +43,7 @@ extern int yylex(void);
 %token DTS_LITERAL;
 %token DTS_REF;
 %token DTS_LABEL;
+%token DTS_BYTE;
 
 %%
 
@@ -70,7 +71,12 @@ propdata:	label propelem
 propelem:	DTS_STRING
 	|	'<' celllist '>'
 	|	DTS_REF
+	|	'[' bytestring ']'
 	;
+
+bytestring:	DTS_BYTE bytestring
+	  |	DTS_BYTE
+	  ;
 
 celllist:	/* empty */
        |	celllist label DTS_LITERAL
