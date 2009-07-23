@@ -286,6 +286,15 @@ static target_ulong_t parse_insn(struct IRs *bb, uint8_t *addr, target_ulong_t p
 		printf("%s %s", alu_ops[reg2].name, regs[reg].name);
 		break;
 	case 0xc0:
+		// FIXME: this 'if' should be folded into some more generic switch/case
+		if (b == 0xc3) {
+			op16 = addr[pc++];
+			op16 |= (addr[pc++] << 8);
+			stmt1 = ir_add_stmt(bb, new_immediate(Size_I16, op16));
+			ir_add_stmt(bb, new_set_reg(Size_I16, off_PC, stmt1));
+			bb->finished = 1;
+			printf("jp %04x", op16);
+		} else
 		switch (b & 7) {
 		case 6:
 			op8 = addr[pc++];
@@ -301,6 +310,22 @@ static target_ulong_t parse_insn(struct IRs *bb, uint8_t *addr, target_ulong_t p
 			}
 
 			printf("%s 0x%x", alu_ops[reg2].name, op8);
+			break;
+		case 7:
+			op16 = b & 0x38;
+			stmt1 = ir_add_stmt(bb, new_get_reg(Size_I16, off_PC));
+			stmt2 = ir_add_stmt(bb, new_get_reg(Size_I16, off_SP));
+			ir_add_stmt(bb, new_store(Size_I16, stmt2, stmt1));
+
+			stmt1 = ir_add_stmt(bb, new_immediate(Size_I16, 2));
+			stmt2 = ir_add_stmt(bb, new_alu(Size_I16, SUB, stmt2, stmt1));
+			ir_add_stmt(bb, new_set_reg(Size_I16, off_SP, stmt2));
+
+			stmt1 = ir_add_stmt(bb, new_immediate(Size_I16, op16));
+			ir_add_stmt(bb, new_set_reg(Size_I16, off_PC, stmt1));
+			bb->finished = 1;
+
+			printf("rst 0x%02x", op16);
 			break;
 		default:
 			goto undef;
