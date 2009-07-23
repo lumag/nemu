@@ -1,4 +1,4 @@
-SUBDIRS = libir mmio drivers guest-i8080
+SUBDIRS = libmdesc libir mmio drivers guest-i8080
 noinst_HEADERS = include/sys.h
 ACLOCAL_AMFLAGS = -I m4
 

@@ -20,6 +20,8 @@ AC_PROG_CPP
 AC_PROG_MKDIR_P
 AC_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
+AC_PROG_YACC
+AM_PROG_LEX
 
 AC_ARG_ENABLE([werror],
 	      [AS_HELP_STRING([--disable-werror],[compile without -Werror])],
@@ -50,6 +52,7 @@ AC_FUNC_MMAP
 AC_FUNC_REALLOC
 
 AC_CONFIG_FILES([Makefile
+		 libmdesc/Makefile
                  libir/Makefile
                  mmio/Makefile
                  drivers/Makefile
