@@ -52,6 +52,7 @@ static struct reg_s pairs[] = {
 		{"de", off_DE},
 		{"hl", off_HL},
 		{"sp", off_SP},
+		{"psw", off_PSW},
 };
 
 static struct reg_s alu_ops[] = { // FIXME
@@ -311,8 +312,28 @@ static target_ulong_t parse_insn(struct IRs *bb, uint8_t *addr, target_ulong_t p
 
 			printf("%s 0x%x", alu_ops[reg2].name, op8);
 			break;
+		case 5:
+			if (b & 0x8)
+				goto undef;
+			else {
+				reg = (b >> 4) & 3;
+				if (reg == 3)
+					reg = 4; // psw instead of sp :)
+
+				stmt1 = ir_add_stmt(bb, new_get_reg(Size_I16, pairs[reg].off));
+				stmt2 = ir_add_stmt(bb, new_get_reg(Size_I16, off_SP));
+				ir_add_stmt(bb, new_store(Size_I16, stmt2, stmt1));
+
+				stmt1 = ir_add_stmt(bb, new_immediate(Size_I16, 2));
+				stmt2 = ir_add_stmt(bb, new_alu(Size_I16, SUB, stmt2, stmt1));
+				ir_add_stmt(bb, new_set_reg(Size_I16, off_SP, stmt2));
+
+				printf("push %s", pairs[reg].name);
+				break;
+			}
 		case 7:
 			op16 = b & 0x38;
+
 			stmt1 = ir_add_stmt(bb, new_get_reg(Size_I16, off_PC));
 			stmt2 = ir_add_stmt(bb, new_get_reg(Size_I16, off_SP));
 			ir_add_stmt(bb, new_store(Size_I16, stmt2, stmt1));
