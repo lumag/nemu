@@ -41,7 +41,7 @@ static uint32_t i7seg_read32(void *opaque, ram_offset_t offset) {
 	return 0xffffff;
 }
 static void i7seg_write8(void *opaque, ram_offset_t offset, uint8_t value) {
-	fprintf(stderr, "7-segment at %p write8 at: 0x%lx\n", opaque, offset);
+	fprintf(stderr, "7-segment at %p write8 at: 0x%lx: %02x\n", opaque, offset, value);
 }
 static void i7seg_write16(void *opaque, ram_offset_t offset, uint16_t value) {
 	fprintf(stderr, "7-segment at %p write16 at: 0x%lx\n", opaque, offset);
