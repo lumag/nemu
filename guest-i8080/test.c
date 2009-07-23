@@ -71,10 +71,14 @@ int main(int argc, char **argv) {
 	mmio_register_memory(0x9001, 1, (void *)0x9001, &i7seg_hdlr);
 	mmio_register_memory(0x9002, 1, (void *)0x9002, &i7seg_hdlr);
 
-	bb = parse(addr, buf.st_size);
-	dump_ir(bb);
-	interp_ir(bb, (uint8_t *)&cpu);
-	free_ir(bb);
+	cpu.PC = 0;
+
+	while (1) {
+		bb = parse(addr + cpu.PC, buf.st_size - cpu.PC);
+		dump_ir(bb);
+		interp_ir(bb, (uint8_t *)&cpu);
+		free_ir(bb);
+	}
 
 	return EXIT_SUCCESS;
 }

@@ -85,6 +85,8 @@ struct IRs {
 	uint32_t num_code;
 	uint32_t max_code;
 	int *code; /* indices inside stmts array */
+
+	unsigned finished: 1;
 };
 
 void dump_ir(struct IRs *bb);

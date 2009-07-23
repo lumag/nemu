@@ -318,7 +318,10 @@ struct IRs *parse(void *addr, unsigned long size) {
 	target_ulong_t pc = 0; // FIXME
 	struct IRs *bb = calloc(1, sizeof(struct IRs));
 
-	while (pc < size) {
+	while (!bb->finished) {
+		if (pc >= size) {
+			printf("WARNING: non-finished bb at %04x\n", pc);
+		}
 		printf("%02x  ", pc);
 		pc = parse_insn(bb, addr, pc);
 		printf("\n");
