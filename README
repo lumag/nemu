@@ -1,0 +1,9 @@
+NEmu is a "New EMUlator" (because I want to make it rather new, whatever that
+means) or "Not an EMUlator" (because it's not really an emulator, but a JIT/
+dynamic recompiler for code from one target to another).
+
+The goal of it is to experiment with some fancy ideas like single universal
+intermediate representation for the code, or descriptive (rather than
+code-driven) approach to guest boxes definition.
+
+However currently nearly nothing works.
