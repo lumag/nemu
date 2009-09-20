@@ -39,7 +39,7 @@ void dump_ir(struct IRs *bb) {
 		printf("%6x\t", i);
 		switch (stmt->type) {
 		case Immediate:
-			printf("Imm%s =%Lx", sizes[stmt->size], stmt->immediate.val); // XXX
+			printf("Imm%s =%Lx", sizes[stmt->size], stmt->immediate.val.val64);
 			break;
 		case GetReg:
 			printf("GetReg%s %%%x", sizes[stmt->size], stmt->get_reg.reg_offset);

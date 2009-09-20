@@ -31,7 +31,7 @@ struct IRStmt *new_immediate(IRSize size, uint64_t value) {
 	struct IRStmt *stmt = calloc(1, sizeof(struct IRStmt));
 	stmt->type = Immediate;
 	stmt->size = size;
-	stmt->immediate.val = value;
+	stmt->immediate.val.val64 = value;
 
 	return stmt;
 }

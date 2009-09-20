@@ -40,6 +40,14 @@ typedef enum {
 	XOR,
 } IRAluOp;
 
+typedef union {
+	unsigned val1:1;
+	uint8_t val8;
+	uint16_t val16;
+	uint32_t val32;
+	uint64_t val64;
+} IRValue;
+
 struct IRStmt {
 	IRStmtType type;
 	IRSize size;
@@ -59,7 +67,7 @@ struct IRStmt {
 			int val_stmt;
 		} store;
 		struct {
-			uint64_t val; // FIXME: replace with union?
+			IRValue val;
 		} immediate;
 		struct {
 			// FIXME: operation type

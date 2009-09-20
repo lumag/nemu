@@ -36,6 +36,13 @@ static uint32_t sizes[] = {
 		[Size_I32] = 4,
 };
 
+#if GUEST_ADDRESS_BITS == 16
+#define addrval val16
+#else
+#error guest address space is not suported
+#endif
+
+
 static inline uint64_t interp_alu(struct IRStmt *stmt, uint64_t op1, uint64_t op2) {
 	uint64_t r;
 
@@ -60,10 +67,10 @@ static inline uint64_t interp_alu(struct IRStmt *stmt, uint64_t op1, uint64_t op
 	return r & ((1 << (8 * sizes[stmt->size])) - 1);
 }
 
-// FIXME endianness!!!
+// FIXME endianness in register file access!!!
 void interp_ir(struct IRs *bb, uint8_t *regfile) {
 	int i;
-	uint64_t *results; // FIXME
+	IRValue *results; // FIXME
 	results = calloc(bb->num_stmt, sizeof(*results));
 	for (i = 0; i < bb->num_code; i++) {
 		int nstmt = bb->code[i];
@@ -76,46 +83,46 @@ void interp_ir(struct IRs *bb, uint8_t *regfile) {
 		case GetReg:
 			{
 				uint8_t *ptr = regfile + stmt->get_reg.reg_offset;
-				uint64_t r = 0;
 				switch (stmt->size) {
 				case Size_I32:
-					r |= (*(ptr+3)) << 24;
-					r |= (*(ptr+2)) << 16;
+					results[nstmt].val32 = *(uint32_t*)ptr;
+					break;
 				case Size_I16:
-					r |= (*(ptr+1)) << 8;
+					results[nstmt].val16 = *(uint16_t*)ptr;
+					break;
 				case Size_I8:
-					r |= *ptr;
+					results[nstmt].val8 = *(uint8_t*)ptr;
+					break;
 				}
-				results[nstmt] = r;
 			}
 			break;
 		case SetReg:
 			{
 				uint8_t *ptr = regfile + stmt->get_reg.reg_offset;
-				uint64_t r = results[stmt->set_reg.val_stmt];
 				switch (stmt->size) {
 				case Size_I32:
-					(*(ptr+3)) = (r >> 24) & 0xff;
-					(*(ptr+2)) = (r >> 16) & 0xff;
+					*(uint32_t*)ptr = results[stmt->set_reg.val_stmt].val32;
+					break;
 				case Size_I16:
-					(*(ptr+1)) = (r >> 8) & 0xff;
+					*(uint16_t*)ptr = results[stmt->set_reg.val_stmt].val16;
+					break;
 				case Size_I8:
-					*ptr = r & 0xff;
+					*(uint8_t*)ptr = results[stmt->set_reg.val_stmt].val8;
+					break;
 				}
-				results[nstmt] = r;
 			}
 			break;
 		case Load:
 			printf("!!!!Load ");
 			switch (stmt->size) {
 			case Size_I8:
-				results[nstmt] = mmio_read_8(results[stmt->load.addr_stmt]);
+				results[nstmt].val8 = mmio_read_8(results[stmt->load.addr_stmt].addrval);
 				break;
 			case Size_I16:
-				results[nstmt] = mmio_read_16(results[stmt->load.addr_stmt]);
+				results[nstmt].val16 = mmio_read_16(results[stmt->load.addr_stmt].addrval);
 				break;
 			case Size_I32:
-				results[nstmt] = mmio_read_32(results[stmt->load.addr_stmt]);
+				results[nstmt].val32 = mmio_read_32(results[stmt->load.addr_stmt].addrval);
 				break;
 			}
 //			printf("Load%s @(%x)", sizes[stmt->size], stmt->load.addr_stmt);
@@ -123,13 +130,13 @@ void interp_ir(struct IRs *bb, uint8_t *regfile) {
 		case Store:
 			switch (stmt->size) {
 			case Size_I8:
-				mmio_write_8(results[stmt->load.addr_stmt], results[stmt->store.val_stmt]);
+				mmio_write_8(results[stmt->load.addr_stmt].addrval, results[stmt->store.val_stmt].val8);
 				break;
 			case Size_I16:
-				mmio_write_16(results[stmt->load.addr_stmt], results[stmt->store.val_stmt]);
+				mmio_write_16(results[stmt->load.addr_stmt].addrval, results[stmt->store.val_stmt].val16);
 				break;
 			case Size_I32:
-				mmio_write_32(results[stmt->load.addr_stmt], results[stmt->store.val_stmt]);
+				mmio_write_32(results[stmt->load.addr_stmt].addrval, results[stmt->store.val_stmt].val32);
 				break;
 			}
 			results[nstmt] = results[stmt->store.val_stmt];
@@ -137,11 +144,12 @@ void interp_ir(struct IRs *bb, uint8_t *regfile) {
 			break;
 		case ALUOp:
 //			printf("ALU%s #(%x) #(%x)", sizes[stmt->size], stmt->alu.op1_stmt, stmt->alu.op2_stmt);
-			results[nstmt] = interp_alu(stmt, results[stmt->alu.op1_stmt], results[stmt->alu.op2_stmt]);
+			// FIXME: alu bitness
+			results[nstmt].val64 = interp_alu(stmt, results[stmt->alu.op1_stmt].val64, results[stmt->alu.op2_stmt].val64);
 			break;
 		}
 
-		printf("%04Lx\n", results[nstmt]);
+		printf("%04Lx\n", results[nstmt].val64);
 	}
 
 	free(results);
