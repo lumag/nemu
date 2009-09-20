@@ -367,6 +367,8 @@ struct IRs *parse(void *addr, unsigned long size) {
 	while (!bb->finished) {
 		if (pc >= size) {
 			printf("WARNING: non-finished bb at %04x\n", pc);
+			bb->finished = 1;
+			break;
 		}
 		printf("%02x  ", pc);
 		pc = parse_insn(bb, addr, pc);
