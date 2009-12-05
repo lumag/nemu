@@ -101,4 +101,7 @@ void dump_ir(struct IRs *bb);
 void interp_ir(struct IRs *bb, uint8_t *regfile);
 void free_ir(struct IRs *bb);
 
+/* This shoud be provided by guest system */
+struct IRs *parse(void *addr, unsigned long size);
+
 #endif /* IR_H_ */

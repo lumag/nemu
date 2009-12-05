@@ -32,7 +32,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include <guest.h>
 #include <i8080.h>
 #include <ir.h>
 #include <mmio.h>

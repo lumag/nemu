@@ -25,7 +25,6 @@
 #include <stdio.h>
 
 #include "i8080.h"
-#include <guest.h>
 #include "ir.h"
 
 struct reg_s {

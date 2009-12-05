@@ -3,7 +3,7 @@ bin_PROGRAMS = test
 
 AM_CPPFLAGS = -I$(srcdir)/include -I$(top_srcdir)/include -I$(top_srcdir)/libir/include
 
-noinst_HEADERS = include/i8080.h include/guest.h
+noinst_HEADERS = include/i8080.h
 libguest_i8080_la_SOURCES = parse.c
 
 test_CPPFLAGS = $(AM_CPPFLAGS) -I$(top_srcdir)/mmio/include -I$(top_srcdir)/drivers/include -DGUEST_ADDRESS_BITS=16
